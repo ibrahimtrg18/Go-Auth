@@ -7,9 +7,9 @@ COPY go.sum ./
 
 RUN go mod download
 
-COPY *.go ./
+COPY . ./
 
-RUN go build -o /jemari
+RUN go build -o jemari
 
 EXPOSE 1323
 
