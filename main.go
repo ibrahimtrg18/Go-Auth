@@ -19,7 +19,8 @@ func main() {
 
 	c := &controller.Controller{DB: configs.DB}
 
-	apiGroup.POST("/user/partner", c.CreatePartnerUserHandler)
+	apiGroup.POST("/user/partner", c.CreatePartnerUser)
+	apiGroup.POST("/user/partner/login", c.LoginPartnerUser)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
