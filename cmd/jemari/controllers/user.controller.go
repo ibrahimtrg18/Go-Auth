@@ -36,5 +36,34 @@ func (c *Controller) CreatePartnerUser(ctx echo.Context) error {
 }
 
 func (c *Controller) LoginPartnerUser(ctx echo.Context) error {
-	return ctx.JSON(http.StatusOK, "")
+	partnerUserDTO := new(model.PartnerUser)
+
+	if err := ctx.Bind(partnerUserDTO); err != nil {
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
+
+	partnerUser := new(model.PartnerUser)
+
+	if err := c.DB.Where("pic_email = ?", partnerUserDTO.Email).First(&partnerUser).Error; err != nil {
+		return ctx.String(http.StatusInternalServerError, "Not found!")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(partnerUser.Password), []byte(partnerUserDTO.Password)); err != nil {
+		return ctx.String(http.StatusInternalServerError, "Wrong password!")
+	}
+
+	payloadToken := map[string]interface{}{
+		"id": partnerUser.ID,
+	}
+
+	accessToken, err := util.CreateToken(payloadToken, 1)
+	if err != nil {
+		return ctx.String(http.StatusInternalServerError, err.Error())
+	}
+
+	u := util.Response{Code: http.StatusOK, Message: "Successfully Login Account!", Data: map[string]interface{}{
+		"accessToken": accessToken,
+	}}
+
+	return u.ResponseSuccess(ctx)
 }
