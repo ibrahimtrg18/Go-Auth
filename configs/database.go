@@ -1,4 +1,4 @@
-package configs
+package config
 
 import (
 	"fmt"
@@ -8,16 +8,20 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+var db *gorm.DB
 var err error
 
 func InitDatabase() {
 	environment := GetEnvironment()
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", environment.User, environment.Password, environment.Host, environment.Port, environment.Name)
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err.Error())
 		panic("failed to connect database")
 	}
-	DB.AutoMigrate(&model.PartnerUser{})
+	db.AutoMigrate(&model.PartnerUser{})
+}
+
+func InjectDatabase() *gorm.DB {
+	return db
 }

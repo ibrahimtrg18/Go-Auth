@@ -2,13 +2,13 @@ package main
 
 import (
 	controller "github.com/ibrahimtrg18/jemari/cmd/jemari/controllers"
-	"github.com/ibrahimtrg18/jemari/configs"
+	config "github.com/ibrahimtrg18/jemari/configs"
 	"github.com/labstack/echo"
 )
 
 func main() {
-	configs.InitEnvironment()
-	configs.InitDatabase()
+	config.InitEnvironment()
+	config.InitDatabase()
 	e := echo.New()
 
 	e.GET("/", func(e echo.Context) error {
@@ -17,7 +17,9 @@ func main() {
 
 	apiGroup := e.Group("/api")
 
-	c := &controller.Controller{DB: configs.DB}
+	db := config.InjectDatabase()
+
+	c := controller.Controller{DB: db}
 
 	apiGroup.POST("/user/partner", c.CreatePartnerUser)
 	apiGroup.POST("/user/partner/login", c.LoginPartnerUser)
