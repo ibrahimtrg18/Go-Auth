@@ -13,4 +13,4 @@ RUN go build -o jemari
 
 EXPOSE 1323
 
-CMD ["/jemari"]
+CMD ["./jemari"]
