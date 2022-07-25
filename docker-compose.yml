@@ -1,0 +1,61 @@
+version: '3'
+services:
+  app:
+    build: .
+    image: ibrahimtrg18/jemari
+    container_name: jemari_app
+    ports:
+      - 8080:1323
+    environment: 
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+    volumes:
+      - app:/usr/src/app
+    depends_on:
+      - mysql
+    # restart: on-failure
+    networks:
+      - jemari
+
+  mysql:
+    image: mysql:latest
+    container_name: jemari_mysql
+    ports: 
+      - 3306:3306
+    environment: 
+      - MYSQL_USER=docker
+      - MYSQL_ROOT_PASSWORD=${DB_PASS}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_PASSWORD=${DB_PASS}
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - jemari
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: jemari_phpmyadmin
+    ports:
+      - 9090:80
+    environment:
+      - PMA_HOST=jerami-mysql # Note the "fullstack-mysql". Must be the name of the what you used as the mysql service.
+      - PMA_USER=${DB_USER}
+      - PMA_PORT=${DB_PORT}j
+      - PMA_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - mysql
+    # restart: always
+    networks:
+      - jemari
+
+volumes:
+  app:
+  mysql:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  jemari:
+    driver: bridge
